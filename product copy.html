@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product Details</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+
+    header {
+      background: #333;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .product-detail {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .product-detail img {
+      width: 300px;
+      border-radius: 10px;
+    }
+
+    .product-info {
+      margin-left: 30px;
+      flex: 1;
+    }
+
+    .product-container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    .product-info h2 {
+      margin-top: 0;
+    }
+
+    .features {
+      margin-top: 15px;
+      padding-left: 20px;
+    }
+
+    .price {
+      color: green;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .old-price {
+      color: gray;
+      text-decoration: line-through;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+
+    .discount {
+      color: #555;
+      font-size: 14px;
+      margin-left: 5px;
+    }
+
+    .add-btn {
+      margin-top: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .add-btn:hover {
+      background: #0056b3;
+    }
+
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Product Details</h1>
+  </header>
+
+  <div class="product-detail" id="productDetail">
+    <!-- Product details will load here -->
+  </div>
+
+  <footer>
+    <a href="index.html" style="color:white; text-decoration:none;">Back to Home</a>
+  </footer>
+
+  <script>
+    const products = {
+      "Samsung Galaxy M05": { image: "product_img/GalaxyMo5.jpg", name: "Samsung Galaxy M05 (4GB RAM, 64GB Storage)", price: "₹6,499", rawPrice: 6499, mrp: 8999, features: ["6.5-inch PLS LCD Display", "MediaTek Helio G35 Processor", "4GB RAM, 64GB Storage", "Android 13 with One UI", "5000mAh Battery", "13MP Rear + 5MP Front Camera", "Dual SIM 4G"] },
+      "Hybrid Cycle": { image: "product_img/hybridcycle.jpg", name: "Leader TORFIN 26T City/Hybrid Cycle", price: "₹4,999", rawPrice: 4999, mrp: 5999, features: ["26-inch Wheels", "Dual Disc Brakes", "Single Speed", "Non-geared", "Grey Color", "Ergonomic Seat"] },
+      "Samsung Galaxy S24 FE": { image: "product_img/Samsungs24fe.jpg", name: "Samsung Galaxy S24 FE 5G", price: "₹35,791", rawPrice: 35791, mrp: 38999, features: ["6.4-inch Dynamic AMOLED", "Exynos 2200", "8GB RAM, 128GB", "Triple Camera", "4500mAh Battery", "5G Connectivity"] },
+      "Samsung Galaxy A35": { image: "product_img/samsunga35.jpg", name: "Samsung Galaxy A35 5G", price: "₹20,798", rawPrice: 20798, mrp: 22999, features: ["6.6-inch Super AMOLED", "Exynos 1380", "8GB RAM", "Triple Camera", "5000mAh Battery", "Android 14"] },
+      "Samsung Galaxy Ultra s24 5G": { image: "product_img/samultras24.jpg", name: "Samsung Galaxy S24 Ultra 5G", price: "₹86,900", rawPrice: 86900, mrp: 92999, features: ["6.8-inch QHD+", "Snapdragon 8 Gen 3", "12GB RAM", "Quad Camera", "5000mAh Battery", "Android 14"] },
+      "Samsung Galaxy M35 5G": { image: "product_img/samsunga35.jpg", name: "Samsung Galaxy M35 5G", price: "₹16,999", rawPrice: 16999, mrp: 18999, features: ["6.6-inch AMOLED", "Exynos 1380", "6GB RAM", "Triple Camera", "6000mAh Battery", "5G"] },
+      "iPhone 16": { image: "product_img/iphone16.jpg", name: "Apple iPhone 16", price: "₹79,900", rawPrice: 79900, mrp: 82900, features: ["6.1-inch Super Retina XDR display","A18 Chip","128GB Storage", "Dual Camera System","iOS 18","5G Connectivity"] },
+      "iPhone 16 Pro": { image: "product_img/iphone16pro.jpg", name: "Apple iPhone 16 Pro", price: "₹1,29,900", rawPrice: 129900, mrp: 134900, features: ["6.3-inch Super Retina XDR display","A18 Pro Chip","128GB Storage","Triple Camera System","Titanium Build","iOS 18","5G Connectivity"] }
+    };
+
+    function addToCart(name, price, image) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const existingItem = cart.find(item => item.name === name);
+      if (existingItem) {
+        existingItem.qty += 1;
+      } else {
+        cart.push({ name, price, image, qty: 1 });
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      window.location.href = 'cart.html';
+    }
+
+    function loadProduct() {
+      const params = new URLSearchParams(window.location.search);
+      const productName = params.get('name');
+      const product = products[productName];
+
+      if (product) {
+        const discount = Math.round(((product.mrp - product.rawPrice) / product.mrp) * 100);
+        const featuresHTML = product.features.map(f => `<li>${f}</li>`).join('');
+
+        document.getElementById('productDetail').innerHTML = `
+          <div class="product-container">
+            <img src="${product.image}" alt="${product.name}">
+            <div class="product-info">
+              <h2>${product.name}</h2>
+              <div class="price">
+                ₹${product.rawPrice.toLocaleString()} 
+                <span class="old-price">M.R.P: ₹${product.mrp.toLocaleString()}</span>
+                <span class="discount">(${discount}% off)</span>
+              </div>
+              <ul class="features">${featuresHTML}</ul>
+              <button class="add-btn" onclick="addToCart('${product.name}', ${product.rawPrice}, '${product.image}')">Add to Cart 🛒</button>
+            </div>
+          </div>
+        `;
+      } else {
+        document.getElementById('productDetail').innerHTML = `<p style="text-align:center;">Product not found.</p>`;
+      }
+    }
+
+    loadProduct();
+  </script>
+
+</body>
+</html>

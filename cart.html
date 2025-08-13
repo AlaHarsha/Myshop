@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Cart</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+
+    header {
+      background-color: #333;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .cart-container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ddd;
+      padding: 15px 0;
+    }
+
+    .cart-item img {
+      width: 80px;
+      border-radius: 8px;
+    }
+
+    .item-details {
+      flex: 1;
+      padding: 0 15px;
+    }
+
+    .item-details p {
+      margin: 5px 0;
+    }
+
+    .quantity-btns button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+
+    .quantity-btns button:hover {
+      background: #0056b3;
+    }
+
+    .remove-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .remove-btn:hover {
+      background: darkred;
+    }
+
+    .total {
+      text-align: right;
+      font-size: 18px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .buy-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 30px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .buy-btn:hover {
+      background: darkgreen;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Your Shopping Cart 🛒</h1>
+  </header>
+
+  <div class="cart-container" id="cart-container">
+    <!-- Cart Items Will Appear Here -->
+  </div>
+
+  <script>
+    const productImages = {
+      "Samsung Galaxy M05 (4GB RAM, 64GB Storage)": "GalaxyMo5.jpg",
+      "Samsung Galaxy S24 FE 5G": "Samsungs24fe.jpg",
+      "Samsung Galaxy A35 5G": "samsunga35.jpg",
+      "Samsung Galaxy S24 Ultra 5G": "samultras24.jpg",
+      "Samsung Galaxy M35 5G": "samsungM35.jpg",
+      "Hybrid Cycle" :"hybridcycle.jpg",
+      "iPhone 16":"iphone16.jpg",
+      "Phone 16 Pro":"iphone16pro.jpg"
+    };
+
+    
+
+    function loadCart() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const container = document.getElementById('cart-container');
+      container.innerHTML = '';
+
+      if (cart.length === 0) {
+        container.innerHTML = '<p style="text-align:center;">Your cart is empty.</p>';
+        return;
+      }
+
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        const itemTotal = item.price * item.qty;
+        total += itemTotal;
+
+        const imageSrc = productImages[item.name] || 'https://via.placeholder.com/80';
+
+        container.innerHTML += `
+          <div class="cart-item">
+            <img src="${imageSrc}" alt="${item.name}">
+            <div class="item-details">
+              <p><strong>${item.name}</strong></p>
+              <p>Price: ₹${item.price}</p>
+              <div class="quantity-btns">
+                <button onclick="updateQty(${index}, -1)">-</button>
+                ${item.qty}
+                <button onclick="updateQty(${index}, 1)">+</button>
+              </div>
+            </div>
+            <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+          </div>
+        `;
+      });
+
+      container.innerHTML += `
+        <div class="total">Total: ₹${total}</div>
+        <button class="buy-btn" onclick="buyNow()">Proceed to Buy</button>
+      `;
+    }
+
+    function updateQty(index, change) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart[index].qty += change;
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+    }
+
+    function removeItem(index) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+    }
+
+    function buyNow() {
+          window.location.href = "address.html"; 
+    }
+
+
+    loadCart();
+  </script>
+
+</body>
+</html>
